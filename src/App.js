@@ -5,7 +5,7 @@ import './App.css';
 class App extends Component {
   render() {
     return (
-      <Board />
+      <Game />
     );
   }
 }
@@ -24,8 +24,11 @@ class Board extends Component {
   }
 
   render() {
+    const status = "Next Player: X";
+
     return (
       <div>
+        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare()}
           {this.renderSquare()}
@@ -47,6 +50,19 @@ class Board extends Component {
 }
 
 class Game extends Component {
+  render() {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board />
+        </div>
+        <div className="game-info">
+          <div>{/* status */}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
