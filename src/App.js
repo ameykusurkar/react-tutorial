@@ -18,44 +18,18 @@ function Square(props) {
 }
 
 class Board extends Component {
-  constructor() {
-    super();
-    this.state = { squares: Array(9).fill(null), xIsNext: true };
-  }
-
   renderSquare(i) {
     return (
       <Square
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
       />
     );
   }
 
-  handleClick(i) {
-    const squares = this.state.squares.slice();
-    if (squares[i] || calculateWinner(squares)) { return; }
-    squares[i] = this.nextPlayer();
-    this.setState({ squares: squares, xIsNext: !this.state.xIsNext });
-  }
-
-  nextPlayer() {
-    return this.state.xIsNext ? "X" : "O";
-  }
-
   render() {
-    const winner = calculateWinner(this.state.squares);
-    let status;
-
-    if (winner) {
-      status = `Winner: ${winner}`;
-    } else {
-      status = `Next Player: ${this.nextPlayer()}`;
-    }
-
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -99,11 +73,52 @@ function calculateWinner(squares) {
 };
 
 class Game extends Component {
+  constructor() {
+    super();
+    this.state = {
+      history: [{squares: Array(9).fill(null)}],
+      xIsNext: true,
+    };
+  }
+
+  nextPlayer() {
+    return this.state.xIsNext ? "X" : "O";
+  }
+
+  handleClick(i) {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+
+    if (squares[i] || calculateWinner(squares)) { return; }
+    squares[i] = this.nextPlayer();
+    this.setState({
+      history: history.concat([{squares: squares}]),
+      xIsNext: !this.state.xIsNext,
+    });
+  }
+
   render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = calculateWinner(current.squares);
+
+    let status;
+
+    if (winner) {
+      status = `Winner: ${winner}`;
+    } else {
+      status = `Next Player: ${this.nextPlayer()}`;
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <div className="status">{status}</div>
+          <Board squares={current.squares}
+                 xIsNext={this.state.xIsNext}
+                 onClick={(i) => this.handleClick(i)} />
+
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
